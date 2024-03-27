@@ -4,5 +4,6 @@ import "gorm.io/gorm"
 
 type Quiz struct {
 	gorm.Model
-	Topic string `gorm:"not null" json:"name"`
+	Topic         string `gorm:"not null" json:"topic"`
+	Conversations []Conversation
 }

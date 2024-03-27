@@ -34,7 +34,7 @@ func StartDB() {
 		log.Fatal("error connecting to database: ", err)
 	}
 
-	db.Debug().AutoMigrate(model.Conversation{}, model.Message{}, model.Quiz{})
+	db.Debug().AutoMigrate(model.Quiz{}, model.Conversation{}, model.Message{})
 }
 
 func GetDB() *gorm.DB {
