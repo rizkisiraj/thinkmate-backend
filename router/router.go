@@ -13,6 +13,7 @@ func SetupRouter() *gin.Engine {
 	{
 		v1.POST("quiz", controller.CreatQuiz)
 		v1.POST("conversation", controller.StartConversation)
+		v1.POST("conversation/:id/message", controller.PostAnswer)
 	}
 
 	return r
