@@ -60,3 +60,16 @@ func CreateQuiz(m *model.Quiz) (err error) {
 	}
 	return nil
 }
+
+func GetQuizByPin(m *model.Quiz, pin string) (err error) {
+	db := database.GetDB()
+	if db == nil {
+		fmt.Println("Error: Database connection is nil.")
+		return db.Error
+	}
+
+	if err := db.Where("pin = ?", pin).First(&m).Error; err != nil {
+		return err
+	}
+	return nil
+}
