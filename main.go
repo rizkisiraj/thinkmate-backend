@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"thinkmate/database"
 	"thinkmate/router"
@@ -10,7 +11,7 @@ import (
 func main() {
 	database.StartDB()
 	services.StartOpenAIClient()
-	var PORT = os.Getenv("PORT")
+	var PORT = fmt.Sprintf(":%s", os.Getenv("PORT"))
 
 	r := router.SetupRouter()
 
