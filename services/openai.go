@@ -2,12 +2,9 @@ package services
 
 import (
 	"context"
-	"log"
 	"os"
 	helper "thinkmate/helpers"
 	"thinkmate/model"
-
-	"github.com/joho/godotenv"
 
 	openai "github.com/sashabaranov/go-openai"
 )
@@ -15,10 +12,10 @@ import (
 var client *openai.Client
 
 func StartOpenAIClient() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	log.Fatal("Error loading .env file")
+	// }
 
 	apiToken := os.Getenv("OPEN_API_KEY")
 
