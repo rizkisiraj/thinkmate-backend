@@ -2,12 +2,26 @@ package router
 
 import (
 	"thinkmate/controller"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
+
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"https://think-mate-ai-frontend.vercel.app/", "localhost", "127.0.0.1", "thinkmateai.tech"},
+		AllowMethods:     []string{"PUT", "PATCH", "GET", "DELETE", "POST"},
+		AllowHeaders:     []string{"Origin"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		AllowOriginFunc: func(origin string) bool {
+			return origin == "https://github.com"
+		},
+		MaxAge: 12 * time.Hour,
+	}))
 
 	v1 := r.Group("/v1")
 	{

@@ -196,5 +196,24 @@ func GetQuizByPin(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": quizToSend,
 	})
+}
+
+func GetAllConversationByQuizId(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	var allConversations []model.Conversation
+
+	err := repository.GetConversationByQuizId(&allConversations, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"message": err,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": allConversations,
+	})
 
 }
