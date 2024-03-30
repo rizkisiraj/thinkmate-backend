@@ -12,15 +12,13 @@ func SetupRouter() *gin.Engine {
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"PUT", "PATCH", "GET", "DELETE", "POST"},
-		AllowHeaders:     []string{"Origin"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		AllowOriginFunc: func(origin string) bool {
-			return origin == "https://github.com"
-		},
-		MaxAge: 12 * time.Hour,
+		AllowOrigins:     []string{"*"},                                                // Allows all origins
+		AllowMethods:     []string{"PUT", "PATCH", "GET", "DELETE", "POST", "OPTIONS"}, // Ensure OPTIONS is included for preflight requests
+		AllowHeaders:     []string{"*"},                                                // Allows all headers. You might specify actual headers you expect or use "*" for any.
+		ExposeHeaders:    []string{"Content-Length"},                                   // Specify which headers are safe to expose to the browser
+		AllowCredentials: true,                                                         // If you want to include credentials like cookies, authorization headers, or TLS client certificates
+		AllowOriginFunc:  func(origin string) bool { return true },                     // Optionally, remove or set to always return true
+		MaxAge:           12 * time.Hour,                                               // Defines the max age for the CORS preflight request cache
 	}))
 
 	v1 := r.Group("/v1")
