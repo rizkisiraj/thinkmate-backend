@@ -59,6 +59,7 @@ func PostAnswer(ctx *gin.Context) {
 	}
 
 	gptMessage.ConversationID = uint(conversationId)
+	repository.SaveMessage(&studentMessage)
 	repository.SaveMessage(&gptMessage)
 
 	ctx.JSON(http.StatusOK, gin.H{
@@ -88,6 +89,17 @@ func StartConversation(ctx *gin.Context) {
 	tx := database.GetDB().Begin()
 	err := repository.CreateConversation(&newConversation)
 	if err != nil {
+		tx.Rollback()
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": err,
+		})
+		return
+	}
+
+	var quiz model.Quiz
+	err = repository.GetQuizById(&quiz, postRequest.QuizID)
+	if err != nil {
+		tx.Rollback()
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"message": err,
 		})
@@ -97,26 +109,26 @@ func StartConversation(ctx *gin.Context) {
 	promptMessage := model.Message{
 		ConversationID: newConversation.ID,
 		Role:           "system",
-		Message:        fmt.Sprintf(prompt, "Partisipasi perempuan di bidang IT"),
+		Message:        fmt.Sprintf(prompt, quiz.Topic),
 	}
 
 	messages := []model.Message{
 		promptMessage,
 	}
 
-	err = repository.SaveMessage(&promptMessage)
+	message, err := services.GetGPTResponse(messages)
 	if err != nil {
 		tx.Rollback()
-		ctx.JSON(http.StatusInternalServerError, gin.H{
+		ctx.JSON(http.StatusBadGateway, gin.H{
 			"message": err,
 		})
 		return
 	}
 
-	message, err := services.GetGPTResponse(messages)
+	err = repository.SaveMessage(&message)
 	if err != nil {
 		tx.Rollback()
-		ctx.JSON(http.StatusBadGateway, gin.H{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"message": err,
 		})
 		return
@@ -214,6 +226,26 @@ func GetAllConversationByQuizId(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": allConversations,
+	})
+
+}
+
+func GetAllMessagesByConversationId(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	var allMessages []model.Message
+
+	err := repository.GetMessagesByConversationID(&allMessages, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"message": err,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": allMessages,
 	})
 
 }

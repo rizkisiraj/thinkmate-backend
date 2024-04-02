@@ -86,3 +86,16 @@ func GetConversationByQuizId(m *[]model.Conversation, quizId string) (err error)
 	}
 	return nil
 }
+
+func GetQuizById(m *model.Quiz, quizId uint) (err error) {
+	db := database.GetDB()
+	if db == nil {
+		fmt.Println("Error: Database connection is nil.")
+		return db.Error
+	}
+
+	if err := db.Where("id = ?", quizId).Find(&m).Error; err != nil {
+		return err
+	}
+	return nil
+}

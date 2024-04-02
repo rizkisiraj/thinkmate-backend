@@ -27,6 +27,8 @@ func SetupRouter() *gin.Engine {
 		v1.POST("conversation", controller.StartConversation)
 		v1.POST("conversation/:id/message", controller.PostAnswer)
 		v1.GET("quiz", controller.GetQuizByPin)
+		v1.GET("conversation/:id/message", controller.GetAllMessagesByConversationId)
+		v1.GET("quiz/:id/conversation", controller.GetAllConversationByQuizId)
 	}
 
 	return r
