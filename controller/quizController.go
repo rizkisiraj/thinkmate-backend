@@ -125,6 +125,7 @@ func StartConversation(ctx *gin.Context) {
 		return
 	}
 
+	message.ConversationID = promptMessage.ConversationID
 	err = repository.SaveMessage(&message)
 	if err != nil {
 		tx.Rollback()
