@@ -126,6 +126,15 @@ func StartConversation(ctx *gin.Context) {
 	}
 
 	message.ConversationID = promptMessage.ConversationID
+	err = repository.SaveMessage(&promptMessage)
+	if err != nil {
+		tx.Rollback()
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": err,
+		})
+		return
+	}
+
 	err = repository.SaveMessage(&message)
 	if err != nil {
 		tx.Rollback()
