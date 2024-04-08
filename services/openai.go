@@ -33,7 +33,7 @@ func GetGPTResponse(reqMesages []model.Message) (model.Message, error) {
 		context.Background(),
 		openai.ChatCompletionRequest{
 			Model:       openai.GPT3Dot5Turbo,
-			MaxTokens:   60,
+			MaxTokens:   100,
 			Temperature: 0.6,
 			Messages:    convertedMessages,
 		},
