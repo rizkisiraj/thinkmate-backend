@@ -126,16 +126,10 @@ func StartConversation(ctx *gin.Context) {
 	}
 
 	message.ConversationID = promptMessage.ConversationID
-	err = repository.SaveMessage(&promptMessage)
-	if err != nil {
-		tx.Rollback()
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": err,
-		})
-		return
+	messagesToSend := []model.Message{
+		promptMessage, message,
 	}
-
-	err = repository.SaveMessage(&message)
+	err = repository.SaveMessages(&messagesToSend)
 	if err != nil {
 		tx.Rollback()
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -258,4 +252,96 @@ func GetAllMessagesByConversationId(ctx *gin.Context) {
 		"data": allMessages,
 	})
 
+}
+
+type QuizController struct {
+	QuizUsecase model.QuizUsecase
+}
+
+func (qc *QuizController) Create(ctx *gin.Context) {
+	postRequest := struct {
+		Topic string `json:"topic"`
+	}{}
+
+	randomNumber := rand.Intn(9000) + 1000
+	randomString := fmt.Sprintf("%d", randomNumber)
+
+	if err := ctx.BindJSON(&postRequest); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err,
+		})
+		return
+	}
+
+	newQuiz := model.Quiz{
+		Topic: postRequest.Topic,
+		Pin:   randomString,
+	}
+
+	err := qc.QuizUsecase.Create(&newQuiz)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": newQuiz,
+	})
+	return
+
+}
+
+func (qc *QuizController) FetchById(ctx *gin.Context) {
+	id := ctx.Param("id")
+
+	var quiz model.Quiz
+
+	err := qc.QuizUsecase.FetchQuizByID(&quiz, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	if quiz.Topic == "" {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"status":  http.StatusNotFound,
+			"message": "No matching records",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": quiz,
+	})
+	return
+}
+
+func (qc *QuizController) FetchByPin(ctx *gin.Context) {
+	pin, _ := ctx.GetQuery("pin")
+
+	var quiz model.Quiz
+	err := qc.QuizUsecase.FetchQuizByPin(&quiz, pin)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			ctx.JSON(http.StatusOK, gin.H{
+				"status":  http.StatusNotFound,
+				"message": "No matching record.",
+			})
+			return
+		} else {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"status":  http.StatusInternalServerError,
+				"message": err,
+			})
+			return
+		}
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": quiz,
+	})
 }

@@ -33,6 +33,20 @@ func SaveMessage(m *model.Message) (err error) {
 	return nil
 }
 
+func SaveMessages(m *[]model.Message) (err error) {
+	db := database.GetDB()
+	if db == nil {
+		fmt.Println("Error: Database connection is nil.")
+		return db.Error
+	}
+
+	err = db.Create(m).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func CreateConversation(m *model.Conversation) (err error) {
 	db := database.GetDB()
 	if db == nil {
