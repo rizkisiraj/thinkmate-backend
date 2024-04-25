@@ -18,7 +18,7 @@ func QuizAuthorization() gin.HandlerFunc {
 		userID := uint(userData["id"].(float64))
 
 		var getQuiz model.Quiz
-		err := db.Select("user_id").Where("uuid = ?", bookUUID).First(&getBook).Error
+		err := db.Select("user_id").Where("uuid = ?", quizUUID).First(&getQuiz).Error
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{
 				"error":   err.Error(),
@@ -27,7 +27,7 @@ func QuizAuthorization() gin.HandlerFunc {
 			return
 		}
 
-		if getBook. != userID {
+		if getQuiz.TeacherID != userID {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"error":   "Unauthorized",
 				"message": "You are not allowed to access this data",

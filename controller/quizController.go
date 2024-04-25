@@ -154,66 +154,6 @@ func StartConversation(ctx *gin.Context) {
 	})
 }
 
-func CreatQuiz(ctx *gin.Context) {
-	postRequest := struct {
-		Topic string `json:"topic"`
-	}{}
-
-	randomNumber := rand.Intn(9000) + 1000
-	randomString := fmt.Sprintf("%d", randomNumber)
-
-	if err := ctx.BindJSON(&postRequest); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"message": err,
-		})
-		return
-	}
-
-	newQuiz := model.Quiz{
-		Topic: postRequest.Topic,
-		Pin:   randomString,
-	}
-
-	err := repository.CreateQuiz(&newQuiz)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"message": err,
-		})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Successfully created",
-		"data":    newQuiz,
-	})
-}
-
-func GetQuizByPin(ctx *gin.Context) {
-	pin, _ := ctx.GetQuery("pin")
-
-	var quizToSend model.Quiz
-	err := repository.GetQuizByPin(&quizToSend, pin)
-	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			ctx.JSON(http.StatusOK, gin.H{
-				"status":  http.StatusNotFound,
-				"message": "No quiz with matching pin.",
-			})
-			return
-		} else {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
-				"status":  http.StatusInternalServerError,
-				"message": err,
-			})
-			return
-		}
-	}
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"data": quizToSend,
-	})
-}
-
 func GetAllConversationByQuizId(ctx *gin.Context) {
 	id := ctx.Param("id")
 

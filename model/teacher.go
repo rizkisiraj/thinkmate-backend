@@ -14,11 +14,11 @@ type Teacher struct {
 }
 
 type TeacherRepository interface {
-	Create(q *Teacher) error
+	Create(t *Teacher) error
 	FetchTeacherByEmail(t *Teacher, email string) error
 }
 
 type TeacherUsecase interface {
-	Create(q *Teacher) error
-	FetchTeacherByEmail(t *Teacher, email string) error
+	Register(t *Teacher) error
+	Login(t *Teacher, email string, password string) (string, error)
 }
