@@ -22,6 +22,8 @@ func (tu *teacherUsecase) Register(t *model.Teacher) error {
 	newUUID := uuid.New()
 	t.UUID = newUUID.String()
 
+	t.Password = helper.HashPass(t.Password)
+
 	return tu.teacherRepository.Create(t)
 }
 

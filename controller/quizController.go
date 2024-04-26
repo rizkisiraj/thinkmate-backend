@@ -11,6 +11,7 @@ import (
 	"thinkmate/services"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/sashabaranov/go-openai"
 	"gorm.io/gorm"
 )
@@ -199,6 +200,9 @@ type QuizController struct {
 }
 
 func (qc *QuizController) Create(ctx *gin.Context) {
+	userData := ctx.MustGet("userData").(jwt.MapClaims)
+	userID := uint(userData["id"].(float64))
+
 	postRequest := struct {
 		Topic string `json:"topic"`
 	}{}
@@ -214,8 +218,9 @@ func (qc *QuizController) Create(ctx *gin.Context) {
 	}
 
 	newQuiz := model.Quiz{
-		Topic: postRequest.Topic,
-		Pin:   randomString,
+		Topic:     postRequest.Topic,
+		Pin:       randomString,
+		TeacherID: userID,
 	}
 
 	err := qc.QuizUsecase.Create(&newQuiz)

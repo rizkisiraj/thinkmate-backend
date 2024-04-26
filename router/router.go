@@ -3,6 +3,7 @@ package router
 import (
 	"thinkmate/controller"
 	"thinkmate/database"
+	"thinkmate/middleware"
 	"thinkmate/repositories"
 	"thinkmate/usecase"
 	"time"
@@ -37,6 +38,7 @@ func SetupRouter() *gin.Engine {
 	}
 
 	NewQuizRouter(*db, v1)
+	NewTeacherRouter(*db, v1)
 
 	return r
 }
@@ -48,6 +50,16 @@ func NewQuizRouter(db gorm.DB, group *gin.RouterGroup) {
 	}
 
 	group.GET("quiz", qc.FetchByPin)
-	group.POST("/quiz", qc.Create)
+	group.POST("/quiz", middleware.Authentication(), qc.Create)
 	group.GET("/quiz/:id", qc.FetchById)
+}
+
+func NewTeacherRouter(db gorm.DB, group *gin.RouterGroup) {
+	tr := repositories.NewTeacherRepository(db)
+	tc := &controller.TeacherController{
+		TeacherUsecase: usecase.NewTeacherUsecase(tr),
+	}
+
+	group.POST("/register", tc.UserRegister)
+	group.POST("/login", tc.UserLogin)
 }
