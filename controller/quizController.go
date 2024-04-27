@@ -272,7 +272,7 @@ func (qc *QuizController) FetchByPin(ctx *gin.Context) {
 	err := qc.QuizUsecase.FetchQuizByPin(&quiz, pin)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			ctx.JSON(http.StatusOK, gin.H{
+			ctx.JSON(http.StatusNotFound, gin.H{
 				"status":  http.StatusNotFound,
 				"message": "No matching record.",
 			})
@@ -288,5 +288,49 @@ func (qc *QuizController) FetchByPin(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"data": quiz,
+	})
+}
+
+func (qc *QuizController) FetchQuizByTeacherId(ctx *gin.Context) {
+	id := ctx.Param("teacherId")
+	teacherParamId, err := strconv.Atoi(id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": err,
+		})
+		return
+	}
+
+	userData := ctx.MustGet("userData").(jwt.MapClaims)
+	authenticatedTeacherId := uint(userData["id"].(float64))
+
+	if uint(teacherParamId) != authenticatedTeacherId {
+		ctx.JSON(http.StatusForbidden, gin.H{
+			"error":   "Unauthorized",
+			"message": "You can't access this url",
+		})
+		return
+	}
+
+	var quizzes []model.Quiz
+	err = qc.QuizUsecase.FetchQuizByTeacherId(&quizzes, authenticatedTeacherId)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"message": err,
+		})
+		return
+	}
+
+	if len(quizzes) <= 0 {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"status":  http.StatusNotFound,
+			"message": "No matching record",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data": quizzes,
 	})
 }

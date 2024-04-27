@@ -23,3 +23,7 @@ func (qu *quizUsecase) FetchQuizByID(q *model.Quiz, quizId string) error {
 func (qu *quizUsecase) FetchQuizByPin(q *model.Quiz, pin string) error {
 	return qu.quizRepository.FetchQuizByPin(q, pin)
 }
+
+func (qu *quizUsecase) FetchQuizByTeacherId(q *[]model.Quiz, teacherId uint) error {
+	return qu.quizRepository.FetchQuizByTeacherId(q, teacherId)
+}

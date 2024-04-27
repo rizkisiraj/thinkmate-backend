@@ -16,10 +16,12 @@ type QuizRepository interface {
 	Create(q *Quiz) error
 	FetchQuizByID(q *Quiz, quizId string) error
 	FetchQuizByPin(q *Quiz, pin string) error
+	FetchQuizByTeacherId(q *[]Quiz, teacherId uint) error
 }
 
 type QuizUsecase interface {
 	Create(q *Quiz) error
 	FetchQuizByID(q *Quiz, quizId string) error
 	FetchQuizByPin(q *Quiz, pin string) error
+	FetchQuizByTeacherId(q *[]Quiz, teacherId uint) error
 }

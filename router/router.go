@@ -52,6 +52,7 @@ func NewQuizRouter(db gorm.DB, group *gin.RouterGroup) {
 	group.GET("quiz", qc.FetchByPin)
 	group.POST("/quiz", middleware.Authentication(), qc.Create)
 	group.GET("/quiz/:id", qc.FetchById)
+	group.GET("/quiz/:teacheId", middleware.Authentication(), qc.FetchQuizByTeacherId)
 }
 
 func NewTeacherRouter(db gorm.DB, group *gin.RouterGroup) {
