@@ -39,7 +39,7 @@ func (qr *quizRepository) FetchQuizByPin(q *model.Quiz, pin string) error {
 }
 
 func (qr *quizRepository) FetchQuizByTeacherId(q *[]model.Quiz, teacherId uint) error {
-	if err := qr.database.Where("teacherId = ?", teacherId).Find(&q).Error; err != nil {
+	if err := qr.database.Where("teacher_id = ?", teacherId).Find(&q).Error; err != nil {
 		return err
 	}
 	return nil
