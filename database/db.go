@@ -8,7 +8,6 @@ import (
 
 	// "thinkmate/model"
 
-	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -19,10 +18,10 @@ var (
 )
 
 func StartDB() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	log.Fatal("Error loading .env file")
+	// }
 
 	host := os.Getenv("HOST")
 	user := os.Getenv("DB_USER")
