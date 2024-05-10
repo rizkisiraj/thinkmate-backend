@@ -161,8 +161,6 @@ func GetAllConversationByQuizId(ctx *gin.Context) {
 	var allConversations []model.Conversation
 	var quiz model.Quiz
 
-	responseData := make(map[string]interface{})
-
 	// Add `allConversations` and `quiz` to the map
 	quiz.Conversations = allConversations
 
