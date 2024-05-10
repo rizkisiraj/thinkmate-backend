@@ -162,7 +162,6 @@ func GetAllConversationByQuizId(ctx *gin.Context) {
 	var quiz model.Quiz
 
 	// Add `allConversations` and `quiz` to the map
-	quiz.Conversations = allConversations
 
 	err := repository.GetConversationByQuizId(&allConversations, id)
 	if err != nil {
@@ -172,6 +171,7 @@ func GetAllConversationByQuizId(ctx *gin.Context) {
 		})
 		return
 	}
+	quiz.Conversations = allConversations
 
 	// Convert the string to uint
 	num, err := strconv.ParseUint(id, 10, 64)
