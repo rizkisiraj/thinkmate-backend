@@ -159,6 +159,12 @@ func GetAllConversationByQuizId(ctx *gin.Context) {
 	id := ctx.Param("id")
 
 	var allConversations []model.Conversation
+	var quiz model.Quiz
+
+	responseData := make(map[string]interface{})
+
+	// Add `allConversations` and `quiz` to the map
+	quiz.Conversations = allConversations
 
 	err := repository.GetConversationByQuizId(&allConversations, id)
 	if err != nil {
@@ -169,8 +175,24 @@ func GetAllConversationByQuizId(ctx *gin.Context) {
 		return
 	}
 
+	// Convert the string to uint
+	num, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+
+	err = repository.GetQuizById(&quiz, uint(num))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"message": err,
+		})
+		return
+	}
+
 	ctx.JSON(http.StatusOK, gin.H{
-		"data": allConversations,
+		"data": quiz,
 	})
 
 }
